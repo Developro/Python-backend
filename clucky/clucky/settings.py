@@ -31,12 +31,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    #'django.contrib.admin',
-    #'django.contrib.auth',
+    'django.contrib.admin',
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'clusers.apps.ClusersConfig',
+    'main.apps.MainConfig',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +76,16 @@ WSGI_APPLICATION = 'clucky.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': {  # Эта база будет использоваться для хранения служебной информации django
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_db',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
+
+    'clucky': {  # Эта база будет использоваться для работы всего пайтон бэка
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'clucky',
         'USER': 'root',
@@ -82,6 +93,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     }
+
 }
 
 
@@ -122,3 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'clusers.User'
+
+DATABASE_ROUTERS = ['clucky.routers.CluckyRouter']

@@ -1,17 +1,28 @@
 from django.db import models
-from clucky.clusers.models import Users
+from clusers.models import User
 
 # Create your models here.
 
-# Эти модели сгенерированы автоматически, необходимо всё перепроверить
+
+class AnswerVote(models.Model):
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    answer = models.ForeignKey('Answer', models.DO_NOTHING)
+    vote = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'answer_votes'
+        unique_together = (('user', 'answer'),)
 
 
 class Answer(models.Model):
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    question = models.ForeignKey('Question', models.DO_NOTHING)
     answer = models.TextField()
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-    question = models.ForeignKey('Questions', models.DO_NOTHING, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -20,21 +31,36 @@ class Answer(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=128)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = False
         db_table = 'categories'
+        verbose_name_plural = 'categories'
+
+
+class QuestionVote(models.Model):
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    question = models.ForeignKey('Question', models.DO_NOTHING)
+    vote = models.IntegerField()
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'question_votes'
+        unique_together = (('user', 'question'),)
 
 
 class Question(models.Model):
-    question = models.TextField()
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    tags = models.ManyToManyField('Tag', through='QuestionsTags')
+    categories = models.ManyToManyField(Category, through='QuestionsCategories')
     subject = models.CharField(max_length=255)
-    views = models.PositiveIntegerField()
+    question = models.TextField()
+    views = models.IntegerField()
     created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -42,46 +68,27 @@ class Question(models.Model):
 
 
 class QuestionsCategories(models.Model):
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
     question = models.ForeignKey(Question, models.DO_NOTHING, primary_key=True)
     category = models.ForeignKey(Category, models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'questions_categories'
-        unique_together = (('question', 'category'),)
 
 
 class QuestionsTags(models.Model):
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
     question = models.ForeignKey(Question, models.DO_NOTHING, primary_key=True)
-    tag = models.ForeignKey('Tags', models.DO_NOTHING)
+    tag = models.ForeignKey('Tag', models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'questions_tags'
-        unique_together = (('question', 'tag'),)
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=128)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = False
         db_table = 'tags'
-
-
-class Vote(models.Model):
-    vote = models.CharField(max_length=7)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-    answer = models.ForeignKey(Answer, models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(Users, models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'votes'

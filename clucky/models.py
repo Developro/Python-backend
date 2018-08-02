@@ -8,12 +8,25 @@
 from django.db import models
 
 
+class AnswerVotes(models.Model):
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    answer = models.ForeignKey('Answers', models.DO_NOTHING)
+    vote = models.IntegerField()
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'answer_votes'
+        unique_together = (('user', 'answer'),)
+
+
 class Answers(models.Model):
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    question = models.ForeignKey('Questions', models.DO_NOTHING)
     answer = models.TextField()
     created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-    question = models.ForeignKey('Questions', models.DO_NOTHING, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -23,20 +36,32 @@ class Answers(models.Model):
 class Categories(models.Model):
     name = models.CharField(max_length=128)
     created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
 
     class Meta:
         managed = False
         db_table = 'categories'
 
 
-class Questions(models.Model):
-    question = models.TextField()
-    subject = models.CharField(max_length=255)
-    views = models.PositiveIntegerField()
+class QuestionVotes(models.Model):
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    question = models.ForeignKey('Questions', models.DO_NOTHING)
+    vote = models.IntegerField()
     created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'question_votes'
+        unique_together = (('user', 'question'),)
+
+
+class Questions(models.Model):
+    user = models.ForeignKey('Users', models.DO_NOTHING)
+    subject = models.CharField(max_length=255)
+    question = models.TextField()
+    views = models.IntegerField()
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -44,8 +69,6 @@ class Questions(models.Model):
 
 
 class QuestionsCategories(models.Model):
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
     question = models.ForeignKey(Questions, models.DO_NOTHING, primary_key=True)
     category = models.ForeignKey(Categories, models.DO_NOTHING)
 
@@ -56,8 +79,6 @@ class QuestionsCategories(models.Model):
 
 
 class QuestionsTags(models.Model):
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
     question = models.ForeignKey(Questions, models.DO_NOTHING, primary_key=True)
     tag = models.ForeignKey('Tags', models.DO_NOTHING)
 
@@ -70,36 +91,10 @@ class QuestionsTags(models.Model):
 class Tags(models.Model):
     name = models.CharField(max_length=128)
     created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
 
     class Meta:
         managed = False
         db_table = 'tags'
 
 
-class Users(models.Model):
-    login = models.CharField(unique=True, max_length=255)
-    email = models.CharField(unique=True, max_length=255)
-    password_hash = models.CharField(max_length=64)
-    access_token_hash = models.CharField(max_length=64, blank=True, null=True)
-    acc_action_token_hash = models.CharField(max_length=64, blank=True, null=True)
-    refresh_token_hash = models.CharField(max_length=64, blank=True, null=True)
-    status = models.CharField(max_length=8)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
 
-    class Meta:
-        managed = False
-        db_table = 'users'
-
-
-class Votes(models.Model):
-    vote = models.CharField(max_length=7)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
-    answer = models.ForeignKey(Answers, models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(Users, models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'votes'
