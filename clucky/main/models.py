@@ -68,7 +68,7 @@ class Question(models.Model):
 
 
 class QuestionsCategories(models.Model):
-    question = models.ForeignKey(Question, models.DO_NOTHING, primary_key=True)
+    question = models.ForeignKey(Question, models.DO_NOTHING)
     category = models.ForeignKey(Category, models.DO_NOTHING)
 
     class Meta:
@@ -77,7 +77,7 @@ class QuestionsCategories(models.Model):
 
 
 class QuestionsTags(models.Model):
-    question = models.ForeignKey(Question, models.DO_NOTHING, primary_key=True)
+    question = models.ForeignKey(Question, models.DO_NOTHING)
     tag = models.ForeignKey('Tag', models.DO_NOTHING)
 
     class Meta:

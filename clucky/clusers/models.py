@@ -51,7 +51,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     login = models.CharField(unique=True, max_length=255)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=64, db_column='password_hash')
+    password = models.CharField(max_length=128, db_column='password_hash')
     avatar = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=128, blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)
@@ -71,8 +71,13 @@ class User(AbstractBaseUser):
         managed = False
         db_table = 'users'
 
-
     def __str__(self):
+        return self.login
+
+    def get_full_name(self):
+        return self.login
+
+    def get_short_name(self):
         return self.login
 
     def has_perm(self, perm, obj=None):
